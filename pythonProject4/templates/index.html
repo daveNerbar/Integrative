@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload CSV and Display Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            width: 400px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #333333;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .file-upload {
+            background-color: #007BFF;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
+            margin: 10px 0;
+            width: 150px;
+            display: inline-block;
+        }
+        .file-upload:hover {
+            background-color: #0056b3;
+        }
+        .file-name {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload a CSV File</h1>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <label for="csvFile" class="file-upload">Choose File</label>
+            <input type="file" id="csvFile" name="csvFile" accept=".csv" onchange="this.nextElementSibling.innerText = this.files[0].name" required>
+            <span class="file-name">No file chosen</span>
+            <br>
+            <input type="submit" value="Upload" class="file-upload">
+        </form>
+    </div>
+</body>
+</html>

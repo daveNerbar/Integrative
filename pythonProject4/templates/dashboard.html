@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e3d59;
+            color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1500px;
+            background-color: #3e6174;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        h1,
+        h2 {
+            color: #f5f5f5;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .nav-list {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            padding: 5px;
+            list-style: none;
+            position: sticky;
+            top: 0;
+            background-color: #3e6174;
+            z-index: 1000;
+            width: 100%;
+            max-width: 1500px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-list li {
+            margin: 0 10px;
+        }
+
+        .nav-list a {
+            color: #f5f5f5;
+            text-decoration: none;
+            padding: 10px 15px;
+            background-color: #415a77;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-list a:hover {
+            background-color: #f76c6c;
+        }
+
+        .table-responsive {
+            background-color: #1e3d59;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        table.data {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table.data th,
+        table.data td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table.data th {
+            background-color: #f76c6c;
+            color: #ffffff;
+        }
+
+        ul.list-group {
+            padding: 0;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        ul.list-group li {
+            background-color: #415a77;
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .plot-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .plot-container img {
+            max-width: 48%;
+            height: auto;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        .form-group label {
+            color: #f5f5f5;
+        }
+
+        .btn {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>CSV Dashboard</h1>
+        <ul class="nav-list">
+
+            <li><a href="#datas">Data</a></li>
+            <li><a href="#plots">Plots</a></li>
+            <li><a href="#sumstats">Summary Statistics</a></li>
+            <li><a href="#datains">Data Insights</a></li>
+            <li><a href="#moddata">Modify Data</a></li>
+        </ul>
+
+        <section id="datas">
+        <h2>Uploaded Data</h2>
+        {% for table in tables %}
+        <div class="table-responsive">
+            {{ table | safe }}
+        </div>
+        {% endfor %}
+        </section>
+
+        <section id="plots">
+            <h2>Plots</h2>
+            <div class="plot-container">
+                {% for plot_path in plot_paths %}
+                <img src="{{ url_for('static', filename=plot_path) }}" alt="Seaborn Plot for {{ plot_path.split('/')[-1].split('.')[0] }}">
+                {% endfor %}
+            </div>
+        </section>
+
+        <section id="sumstats">
+            <h2>Summary Statistics</h2>
+            <div class="table-responsive">
+                {{ summary | safe }}
+            </div>
+        </section>
+
+        <section id="datains">
+            <h2>Data Insights</h2>
+            <ul class="list-group">
+                {% for insight in insights %}
+                <li class="list-group-item"><strong>{{ insight.column }}</strong>: Mean = {{ insight.mean }}, Median = {{ insight.median }}, Std Dev = {{ insight.std }}, Max = {{ insight.max }}, Min = {{ insight.min }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section id="moddata">
+            <h2>Modify Data</h2>
+            <form method="POST">
+                <div class="form-group">
+                    <label for="index">Row Index (for Update/Delete):</label>
+                    <input type="number" class="form-control" id="index" name="index" placeholder="Row Index">
+                </div>
+                {% for column in titles %}
+                <div class="form-group">
+                    <label for="{{ column }}">{{ column }}:</label>
+                    <input type="text" class="form-control" id="{{ column }}" name="{{ column }}" placeholder="{{ column }}">
+                </div>
+                {% endfor %}
+                <button type="submit" name="insert" class="btn btn-primary">Insert</button>
+                <button type="submit" name="update" class="btn btn-warning">Update</button>
+                <button type="submit" name="delete" class="btn btn-danger">Delete</button>
+            </form>
+        </section>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
